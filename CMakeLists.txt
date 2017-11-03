@@ -19,7 +19,7 @@ set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR}/bin)
 #set the default path for built libraries to the "lib" directory
 set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR}/lib)
 
-OPTION(BUILD_TESTS "Build tests" ON)
+OPTION(BUILD_TESTS "Build tests" OFF)
 OPTION(BUILD_PYTHON "Build Python extension" OFF)
 
 IF(MSVC)
@@ -39,19 +39,17 @@ IF(BUILD_POSITION_INDEPENDENT_CODE)
   add_definitions( -fPIC )
 ENDIF()
 
-ADD_DEFINITIONS (
--Wall
--Wextra
-#-Werror
--Wwrite-strings
--Wno-unused-parameter
--fno-strict-aliasing
-)
+
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${PROJECT_SOURCE_DIR}/modules/")
+# get eigen (and boost under windows)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${PROJECT_SOURCE_DIR}/modules/")
 find_package(Eigen REQUIRED)
-set(ADDITIONAL_INCLUDE_DIRS ${EIGEN_INCLUDE_DIRS} ${EIGEN_INCLUDE_DIR}/unsupported)
-include_directories(${PROJECT_SOURCE_DIR}/include)
+MESSAGE(STATUS "Found Eigen: $ENV{EIGEN_INCLUDE_DIR}")
+set(ADDITIONAL_INCLUDE_DIRS ${EIGEN_INCLUDE_DIRS} ${EIGEN_INCLUDE_DIR}/unsupported )
+
+
+include_directories(${ADDITIONAL_INCLUDE_DIRS} ${PROJECT_SOURCE_DIR}/include)
 
 set( OPENGV_SOURCE_FILES
   src/absolute_pose/modules/main.cpp
@@ -179,7 +177,7 @@ set_target_properties( opengv random_generators PROPERTIES
   CXX_STANDARD_REQUIRED ON
   DEBUG_POSTFIX d )
 target_include_directories( opengv PUBLIC ${ADDITIONAL_INCLUDE_DIRS} )
-target_include_directories( random_generators PRIVATE ${ADDITIONAL_INCLUDE_DIRS} )
+target_include_directories( random_generators PUBLIC ${ADDITIONAL_INCLUDE_DIRS} )
 target_link_libraries( random_generators opengv )
 
 IF (BUILD_TESTS)

@@ -41,6 +41,10 @@
 #include <Eigen/Eigen>
 #include <Eigen/src/Core/util/DisableStupidWarnings.h>
 
+#ifndef M_PI
+	#define M_PI 3.14159265359
+#endif
+
 /**
  * \brief The namespace of this library.
  */
